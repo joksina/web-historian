@@ -32,8 +32,6 @@ exports.readListOfUrls = function(callback) {
   //check if it is a callback
   //invoke callback on data
   fs.readFile(exports.paths.list,"utf8", function(err,contents){
-    console.log("contents: ",contents);
-    console.log("exports.list: ",exports.paths.list);
     siteData = contents.split("\n");
     if(callback) {
       callback(siteData);
@@ -58,7 +56,7 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
-  fs.appendFile(exports.paths.list, "\n" + url, function(err){
+  fs.appendFile(exports.paths.list, url + "\n", function(err){
     if (err) throw err;
     callback();
   });
@@ -74,5 +72,17 @@ exports.isUrlArchived = function(path, callback) {
 
 };
 
-exports.downloadUrls = function() {
+exports.downloadUrls = function(arrSites) {
+  _.each(arrSites, function(site){
+    fs.closeSync(fs.openSync(exports.paths.archivedSites + "/" + site, "w"));
+  });
 };
+
+
+
+
+
+
+
+
+

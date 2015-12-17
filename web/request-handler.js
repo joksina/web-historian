@@ -23,8 +23,7 @@ exports.handleRequest = function (req, res) {
   if (req.method === 'GET'){
     action.GET(url.parse(req.url).pathname, req, res);  
   } else if (req.method === "POST"){
-    //Need to search through archived Sites 
-    //archive.isURLin
+    action.POST(url.parse(req.url).pathname, req,res);
   }
   
 };
@@ -41,14 +40,33 @@ var action = {
             sendResponse(res, contents, 200);
           });
         } else {
-          console.log("404");
           sendResponse(res, "Not Found", 404); 
         }
       });
     }
   },
-  'POST': function() {
-
+  'POST': function(path, req, res) {
+      
+    var decodedResults = '';
+    req.on('data', function(chunk){
+      decodedResults += chunk;
+    });
+    req.on('end', function(){
+      archive.isUrlArchived(decodedResults, function(exists){
+        //if the website is in our sites folder 
+        // send shit back      
+      });
+      //if it does exist in list
+      archive.isUrlInList(decodedResults, function(exists){
+        sendResponse(res, false, 302);
+      });
+      //if it doesn't, add to list
+      archive.addUrlToList(decodedResults, function(){
+        console.log("adding");
+        console.log(decodedResults);
+        sendResponse(res, false, 302);
+      });
+    });
   },
   'OPTION': function() {
 
