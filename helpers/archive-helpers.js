@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-
+var http = require('http');
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
  * Consider using the `paths` object below to store frequently used file paths. This way,
@@ -26,11 +26,6 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
-  //takes a callback
-  //read the file *exports.paths.list, 
-  //set data to string and split at new line
-  //check if it is a callback
-  //invoke callback on data
   fs.readFile(exports.paths.list,"utf8", function(err,contents){
     siteData = contents.split("\n");
     if(callback) {
@@ -47,12 +42,6 @@ exports.isUrlInList = function(url, callback) {
     });
     callback(exist);
   });
-
-  //takes url and callback
-  //export the readlistUrl.. it takes one parameter
-  //we can use _.any to check if the site match any url
-  //return site.match url
-  //invoke 
 };
 
 exports.addUrlToList = function(url, callback) {
@@ -67,17 +56,27 @@ exports.isUrlArchived = function(path, callback) {
     //If true invoke
     callback(exists);  
   });
-
-
-
 };
 
 exports.downloadUrls = function(arrSites) {
+  //readurllist and make array
+  
   _.each(arrSites, function(site){
-    fs.closeSync(fs.openSync(exports.paths.archivedSites + "/" + site, "w"));
+
+    //makes new file
+    var fd = fs.openSync(exports.paths.archivedSites + "/" + site, "w");
+    // get contents
+    http.get('http://www.google.com', function(res){
+      var data = '';
+      res.on('data', function(chunk){
+        data += chunk;
+      });
+      res.on('end', function(){
+        fs.writeSync(fd, data);
+      });
+    });
   });
 };
-
 
 
 

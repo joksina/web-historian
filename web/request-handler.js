@@ -52,21 +52,26 @@ var action = {
       decodedResults += chunk;
     });
     req.on('end', function(){
-      archive.isUrlArchived(decodedResults, function(exists){
+      decodedResults = decodedResults.split('=')[1];
+      archive.isUrlArchived(decodedResults,function(exists){
         //if the website is in our sites folder 
         // send shit back      
       });
       //if it does exist in list
       archive.isUrlInList(decodedResults, function(exists){
-        sendResponse(res, false, 302);
+        fs.readFile(archive.paths.siteAssets + "/loading.html", function(err, contents) {
+          sendResponse(res, contents, 302);
+        });
       });
       //if it doesn't, add to list
       archive.addUrlToList(decodedResults, function(){
-        console.log("adding");
-        console.log(decodedResults);
-        sendResponse(res, false, 302);
+        fs.readFile(archive.paths.siteAssets + "/loading.html", function(err, contents) {
+          sendResponse(res, contents, 302);
+        });        
       });
+    
     });
+    archive.downloadUrls();
   },
   'OPTION': function() {
 
