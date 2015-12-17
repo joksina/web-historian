@@ -25,16 +25,53 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function() {
+exports.readListOfUrls = function(callback) {
+  //takes a callback
+  //read the file *exports.paths.list, 
+  //set data to string and split at new line
+  //check if it is a callback
+  //invoke callback on data
+  fs.readFile(exports.paths.list,"utf8", function(err,contents){
+    console.log("contents: ",contents);
+    console.log("exports.list: ",exports.paths.list);
+    siteData = contents.split("\n");
+    if(callback) {
+      callback(siteData);
+    }
+  });
+
 };
 
-exports.isUrlInList = function() {
+exports.isUrlInList = function(url, callback) {
+  exports.readListOfUrls(function(arrContents){
+    var exist =_.any(arrContents, function(website){
+      return website.match(url);
+    });
+    callback(exist);
+  });
+
+  //takes url and callback
+  //export the readlistUrl.. it takes one parameter
+  //we can use _.any to check if the site match any url
+  //return site.match url
+  //invoke 
 };
 
-exports.addUrlToList = function() {
+exports.addUrlToList = function(url, callback) {
+  fs.appendFile(exports.paths.list, "\n" + url, function(err){
+    if (err) throw err;
+    callback();
+  });
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlArchived = function(path, callback) {
+  fs.exists(exports.paths.archivedSites + path, function(exists){
+    //If true invoke
+    callback(exists);  
+  });
+
+
+
 };
 
 exports.downloadUrls = function() {
