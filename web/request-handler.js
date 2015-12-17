@@ -54,8 +54,10 @@ var action = {
     req.on('end', function(){
       decodedResults = decodedResults.split('=')[1];
       archive.isUrlArchived(decodedResults,function(exists){
-        //if the website is in our sites folder 
-        // send shit back      
+        console.log("Were here and it exists");
+        fs.readFile(archive.paths.archivedSites + '/' +decodedResults, function(err, contents) {
+          sendResponse(res, contents, 302);
+        });
       });
       //if it does exist in list
       archive.isUrlInList(decodedResults, function(exists){
@@ -71,7 +73,10 @@ var action = {
       });
     
     });
-    archive.downloadUrls();
+    archive.readListOfUrls(function(array){
+      array = array.slice(0, array.length - 1);
+      archive.downloadUrls(array);
+    });
   },
   'OPTION': function() {
 
