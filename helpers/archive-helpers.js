@@ -62,7 +62,9 @@ exports.isUrlArchived = function(path, callback) {
 exports.downloadUrls = function(arrSites) {
   //readurllist and make array
   _.each(arrSites, function(site){
-    console.log(site);
+    if (!site) {
+      return;
+    }
     request('http://' + site).pipe(fs.createWriteStream(exports.paths.archivedSites + '/' + site));
   });
 };
