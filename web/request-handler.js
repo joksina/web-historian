@@ -45,17 +45,27 @@ var action = {
       });
     }
   },
-  'POST': function(path, req, res) {
-      
+  'POST': function(path, req, res) {      
     var decodedResults = '';
     req.on('data', function(chunk){
       decodedResults += chunk;
     });
     req.on('end', function(){
       decodedResults = decodedResults.split('=')[1];
-      archive.isUrlArchived(decodedResults,function(exists){
-        console.log("Were here and it exists");
-        fs.readFile(archive.paths.archivedSites + '/' +decodedResults, function(err, contents) {
+
+      // archive.isUrlInList(decodedResults, function(found){
+      //   if(found) {
+      //     archive.isUrlArchived(decodedResults, function(exists){
+      //       if(exists) {
+      //         sendResponse(res, "/" + url);
+      //       }
+      //     });
+      //   }
+      // });
+
+        // console.log(contents);
+      archive.isUrlArchived(decodedResults, function(exists){
+        fs.readFile(decodedResults, function(err, contents) {
           sendResponse(res, contents, 302);
         });
       });
@@ -72,13 +82,37 @@ var action = {
         });        
       });
     
-    });
-    archive.readListOfUrls(function(array){
-      array = array.slice(0, array.length - 1);
-      archive.downloadUrls(array);
+    // });
+    // archive.readListOfUrls(function(array){
+    //   array = array.slice(0, array.length - 1);
+    //   archive.downloadUrls(array);
     });
   },
   'OPTION': function() {
 
   }
 };
+
+
+  // 'POST': function(request, response) {
+  //   fs.readFile(request, function(data) {
+  //     var url = data.split('=')[1].replace('http://', '');
+  //     // check sites.txt for web site
+  //     archive.isUrlInList(url, function(found) {
+  //       if (found) { // found site
+  //         // check if site is on disk
+  //         archive.isUrlArchived(url, function(exists) {
+  //           if (exists) {
+  //             // redirect to site page (/www.google.com)
+  //             helpers.sendRedirect(response, '/' + url);
+  //           } else {
+  //             // Redirect to loading.html
+  //             helpers.sendRedirect(response, '/loading.html');
+  //           }
+  //         });
+  //       } else { // not found
+  //         // add to sites.txt
+  //         archive.addUrlToList(url, function() {
+  //           // Redirect to loading.html
+  //           helpers.sendRedirect(response, '/loading.html');
+  //         });
